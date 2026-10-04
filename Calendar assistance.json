@@ -1,0 +1,172 @@
+{
+  "name": "Calendar assistance",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a0a5ab80-8b8a-4e25-8ade-cbe1aa285a45",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Look at my events/meetings for the day and send me a nicely formatted HTML email to omkarjd2203@gmail.com on the top two most important events of the day and tell me why. Look at the event title, description, attendees to find this out.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "bab98963-1fac-47da-8e71-5438a91f2fa1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        96,
+        208
+      ],
+      "id": "6b24161a-6990-4afc-80d7-16b55f3fc92f",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "8XnabRnUxnmoR5bq",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        208
+      ],
+      "id": "a3ef2e9e-58cb-4b92-936d-67c9511a7559",
+      "name": "Send a message in Gmail",
+      "webhookId": "20f01521-7c20-439c-9780-dab7913e5633",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rBgYel0I9RRsZcVt",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "omkarjd2203@gmail.com",
+          "mode": "list",
+          "cachedResultName": "omkarjd2203@gmail.com"
+        },
+        "timeMax": "={{ $now.plus({ day: 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        304
+      ],
+      "id": "63d4fad4-a560-4180-a50d-1ad9edaba500",
+      "name": "Get many events in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "HiQ9Oh05b2qE4vWZ",
+          "name": "Google Calendar account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "57e660df-e4e3-432c-8058-bd006d41613c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "243347634b612eebcdad94a3a37ac625aff5add4c583b3416038abfc296fc01e"
+  },
+  "nodeGroups": [],
+  "id": "3qOXbVsvNcYabqSv",
+  "tags": []
+}
